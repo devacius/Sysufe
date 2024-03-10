@@ -76,9 +76,7 @@ export default function Story() {
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-  useEffect(()=>{
-    document.getElementById('heading').innerHTML=`Read Stories on ${selectedCategory}`;
-  },[selectedCategory])
+  
 
   useEffect(() => {
     onValue(cat, function (snapshot) {
@@ -132,7 +130,7 @@ export default function Story() {
 
   function handleSearch2(e) {
     setSearch(e.target.value);
-    setMenu(false);
+    
     setShow3(true);
 
     const results = performSearch2(e.target.value);
@@ -144,11 +142,13 @@ export default function Story() {
     setSearchText("");
     setSearchResults([]);
     setShow(false);
+    
   }
 
   function handleCategorySelect2(category) {
-    setSelectedValue();
-    setSearch(category);
+    console.log(category);
+    setSelectedValue(category.toUpperCase());
+    setSearch(category.toLowerCase());
     setSearchResults2([]);
     searchBar(category);
   }
@@ -373,7 +373,7 @@ export default function Story() {
         ref(database, `List/${selectedValue.toUpperCase()}`),
         function (snapshot) {
           if (snapshot.exists()) {
-            setStories(Object.entries(snapshot.val()).length);
+            setStories(Object.entries(snapshot.val()).length );
             setMappable(Object.entries(snapshot.val()));
           }
         }
@@ -383,7 +383,7 @@ export default function Story() {
   }, [selectedValue]);
 
   useEffect(() => {
-    if (check) {
+    if (check && search.length>0) {
       onValue(
         ref(database, `List/${check.toUpperCase()}`),
         function (snapshot) {
@@ -406,6 +406,9 @@ export default function Story() {
           if (snapshot.exists()) {
             setStories(Object.entries(snapshot.val()).length);
             setMappable(Object.entries(snapshot.val()));
+          }
+          else{
+            setStories(0);
           }
         }
       );
@@ -647,7 +650,7 @@ export default function Story() {
 
         <section className="section-2">
           <div className="section-2-head">
-            <h1 id="heading">Read their Stories</h1>
+            <h1 id="heading">Read their Stories {search}</h1>
 
             <div className="looking">
               <div className="choose">
@@ -671,7 +674,9 @@ export default function Story() {
                   {initialCategories.map((category) => (
                     <li
                       key={category}
-                      onClick={() => handleCategorySelect2(category)}
+                      onMouseDown={() => {handleCategorySelect2(category);
+                        console.log(category);}
+                      }
                     >
                       {category}
                     </li>
@@ -682,26 +687,32 @@ export default function Story() {
                   {initialCategories.map((category) => (
                     <li
                       key={category}
-                      onClick={() => handleCategorySelect2(category)}
+                      onMouseDown={() => {handleCategorySelect2(category);
+                      console.log(category);}
+                    }
                     >
                       {category}
                     </li>
                   ))}
                 </ul>
-              ) : (
-                show3 &&
+              ) : 
+                (show3 &&
                 searchResults2.length > 0 && (
                   <ul className="search-list search-list-2">
                     {searchResults2.map((category) => (
                       <li
                         key={category}
-                        onClick={() => handleCategorySelect2(category)}
+                        onMouseDown={() => {handleCategorySelect2(category);
+                          console.log(category);}
+                        }
                       >
                         {category}
                       </li>
                     ))}
                   </ul>
                 )
+
+
               )}
             </div>
           </div>
@@ -733,6 +744,7 @@ export default function Story() {
 
           {windowWidth > 425 ? (
             <div>
+
               {selectedValue && (
                 <div className="container">
                   <section className="item-section-main">
@@ -741,19 +753,21 @@ export default function Story() {
                     </div>
                   </section>
                 </div>
-              )}
-
+               )}
+        
               {(!menu || search.length === 0) && (
                 <div className="container">
                   <section className="item-section-main">
                     <div className="item-section-container">
-                      {check && mappable && sorted(mappable)}
+                    
+                      {<p> Nothing to read </p>}
+                      
                     </div>
                   </section>
                 </div>
               )}
 
-              {search.length > 0 && menu && (
+              {/* {search.length > 0 && menu && (
                 <div className="container">
                   <section className="item-section-main">
                     <div className="item-section-container">
@@ -761,7 +775,7 @@ export default function Story() {
                     </div>
                   </section>
                 </div>
-              )}
+              )} */}
             </div>
           ) : (
             <div className="container">
